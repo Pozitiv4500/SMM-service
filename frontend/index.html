@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMM Dungeon Master</title>
+  </head>
+  <body class="h-[100dvh]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script type="text/javascript">
+      async function onTelegramAuth(user, isLogin = false) {
+        let success = false;
+        if (!isLogin) {
+          const res = await fetch(
+            `https://prodanocontest.ru/api/auth/register/`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                ...user,
+                name: localStorage.getItem("name"),
+              }),
+            }
+          );
+          const data = await res.json();
+
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+            success = true;
+          }
+        } else {
+          const res = await fetch(`https://prodanocontest.ru/api/auth/login/`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...user,
+            }),
+          });
+          const data = await res.json();
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+            success = true;
+          }
+        }
+
+        if (success) {
+          location.replace("/");
+        } else {
+          if (window.location.href == "https://prodanocontest.ru/login") {
+            window.location.replace("https://prodanocontest.ru/register");
+          } else if (
+            window.location.href == "https://prodanocontest.ru/register"
+          ) {
+            window.location.replace("https://prodanocontest.ru/login");
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
